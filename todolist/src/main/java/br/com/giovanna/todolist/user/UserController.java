@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import br.com.giovanna.todolist.user.UserModel;
+import at.favre.lib.crypto.bcrypt.BCrypt;
 
 @RestController
 @RequestMapping("/users")
@@ -21,6 +22,9 @@ public ResponseEntity create(@RequestBody UserModel userModel) {
     if(user != null){
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Usuário já existe, tente outro");
     }
+
+   var passwordHashred =  BCrypt.withDefaults().hashToString(12, userModel.getPassword().toCharArray());
+    userModel.setPassword(passwordHashred);
 var userCreated = this.userRepository.save(userModel);
 return ResponseEntity.status(HttpStatus.CREATED).body(userCreated);
 }
